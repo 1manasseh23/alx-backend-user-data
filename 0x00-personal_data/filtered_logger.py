@@ -74,3 +74,36 @@ class RedactingFormatter(logging.Formatter):
         message = super().format(record)
         return filter_datum(
             self.fields, self.REDACTION, message, self.SEPARATOR)
+
+
+# Define the PII_FIELDS constant
+PII_FIELDS = (
+    "email",        # Email addresses
+    "phone",        # Phone numbers
+    "ssn",          # Social Security numbers
+    "password",     # Passwords
+    "ip",           # IP addresses
+)
+
+
+def get_logger() -> logging.Logger:
+    """
+    Creates and returns a logger named 'user_data'.
+
+    The logger is configured to log messages up to INFO level and uses
+    a StreamHandler with RedactingFormatter to redact PII fields.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    handler.setFormatter(formatter)
+
+    logger.addHandler(handler)
+
+    return logger
