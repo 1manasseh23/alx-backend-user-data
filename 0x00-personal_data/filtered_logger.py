@@ -6,6 +6,9 @@ This module provides a function to obfuscate sensitive fields in log messages.
 import logging
 import re
 from typing import List
+import os
+import mysql.connector
+from mysql.connector import Error
 
 
 def filter_datum(
@@ -96,6 +99,7 @@ def get_logger() -> logging.Logger:
     Returns:
         logging.Logger: Configured logger instance.
     """
+
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -107,3 +111,54 @@ def get_logger() -> logging.Logger:
     logger.addHandler(handler)
 
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Connects to a MySQL database using credentials stored
+    in environment variables.
+
+    The following environment variables are used:
+        - PERSONAL_DATA_DB_USERNAME: Database username (default: "root")
+        - PERSONAL_DATA_DB_PASSWORD: Database password (default: empty string)
+        - PERSONAL_DATA_DB_HOST: Database host (default: "localhost")
+        - PERSONAL_DATA_DB_NAME: Database name (required)
+
+    Returns:
+        mysql.connector.connection.MySQLConnection: Connection
+        to the MySQL database.
+
+    Raises:
+        Error: If unable to connect to the database.
+    """
+    try:
+        # Retrieve database credentials from environment variables
+        username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+        password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+        host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+        database = os.getenv("PERSONAL_DATA_DB_NAME")
+
+        if not database:
+            raise ValueError(
+                "Database name must be set in the environment variable "
+                "PERSONAL_DATA_DB_NAME"
+            )
+
+        print(
+            f"Connecting to database '{database}' with user '{username}' "
+            f"on host '{host}'"
+        )
+
+        # Connect to the database
+        connection = mysql.connector.connect(
+            user=username,
+            password=password,
+            host=host,
+            database=database
+        )
+
+        return connection
+
+    except Error as e:
+        print(f"Error: {e}")
+        raise
