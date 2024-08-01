@@ -9,6 +9,8 @@ from typing import List
 import os
 import mysql.connector
 from mysql.connector import Error
+from filtered_logger import get_db
+import datetime
 
 
 def filter_datum(
@@ -162,3 +164,48 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     except Error as e:
         print(f"Error: {e}")
         raise
+
+
+def main():
+    # Set up the logger
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+
+    # StreamHandler setup
+    handler = logging.StreamHandler()
+
+    # Custom Formatter to match the required format
+    formatter = logging.Formatter(
+        '[HOLBERTON] user_data INFO %(asctime)s: %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S,%f'
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    try:
+        # Get database connection
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+
+        # Execute the query to get all rows from the users table
+        cursor.execute("SELECT * FROM users")
+        rows = cursor.fetchall()
+
+        # Process each row and log it
+        for row in rows:
+            log_message = (
+                f"name=***; email=***; phone=***; ssn=***; password=***; "
+                f"ip={row['ip']}; last_login={row['last_login']}; "
+                f"user_agent={row['user_agent']};"
+            )
+            logger.info(log_message)
+
+        cursor.close()
+        db.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+
+
+if __name__ == "__main__":
+    main()
