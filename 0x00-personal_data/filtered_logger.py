@@ -30,9 +30,17 @@ def filter_datum(
     Returns:
         str: The log message with specified fields obfuscated.
     """
-    pattern = f' \
-        {re.escape(separator)}({"|".join(map(re.escape, fields))})=[^;]*'
-    replacement = fr'{separator}\1={redaction}'
+    fields_pattern = "|".join(map(re.escape, fields))
+    pattern = (
+        f'{re.escape(separator)}({fields_pattern})=[^;]*'
+    )
+
+    # Create the replacement pattern
+    replacement = (
+        fr'{separator}\1={redaction}'
+    )
+
+    # Apply the regex substitution
     return re.sub(pattern, replacement, message)
 
 
@@ -65,5 +73,4 @@ class RedactingFormatter(logging.Formatter):
         """
         message = super().format(record)
         return filter_datum(
-            self.fields, self.REDACTION, message, self.SEPARATOR
-            )
+            self.fields, self.REDACTION, message, self.SEPARATOR)
