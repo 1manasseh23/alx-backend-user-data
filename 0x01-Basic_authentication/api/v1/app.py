@@ -7,10 +7,23 @@ from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
 import os
+from api.v1.views import index
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+
+
+@app.errorhandler(403)
+def forbidden(error):
+    """
+    Error handler for 403 status code.
+    Returns:
+        JSON response with error message and 403 status code.
+    """
+    response = jsonify({"error": "Forbidden"})
+    response.status_code = 403
+    return response
 
 
 @app.errorhandler(401)

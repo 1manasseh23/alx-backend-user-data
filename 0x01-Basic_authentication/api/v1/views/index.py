@@ -7,6 +7,14 @@ from api.v1.views import app_views
 app_views = Blueprint('app_views', __name__)
 
 
+@app_views.route('/api/v1/forbidden', methods=['GET'])
+def forbidden_route():
+    """
+    Route that triggers a 403 error.
+    """
+    abort(403)
+
+
 @app_views.route('/api/v1/unauthorized', methods=['GET'])
 def get_unauthorized():
     """This endpoint must raise a 401 error by using abort"""
