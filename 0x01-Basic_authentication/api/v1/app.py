@@ -4,7 +4,7 @@ Route module for the API
 """
 from os import getenv
 from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from flask_cors import (CORS, cross_origin)
 import os
 
@@ -14,15 +14,16 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
 @app.errorhandler(401)
-def unauthorized(error) -> str:
-    """ Not found handler
-    """
-    return jsonify({
-        "error": "Unauthorized"
-        }), 401
+def unauthorized(error):
+    response = make_response(jsonify({"error": "Unauthorized"}), 401)
+    response.headers["Content-Length"] = str(
+        len(response.get_data(as_text=True))
+        )
+    return response
 
 
 if __name__ == "__main__":
+    """Run the app"""
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
     app.run(host=host, port=port)
