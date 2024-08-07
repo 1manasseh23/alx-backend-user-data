@@ -8,21 +8,28 @@ from flask import Flask, jsonify, abort, request
 from flask_cors import CORS
 import os
 from api.v1.auth.auth import Auth
+from api.v1.auth.session_auth import SessionAuth
 from api.v1.auth.basic_auth import BasicAuth
+from models import storage
 
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
+# auth = None
+# auth_type = os.getenv("AUTH_TYPE")
+# if auth_type == "basic_auth":
+#     from api.v1.auth.basic_auth import BasicAuth
+#     auth = BasicAuth()
+# else:
+#     from api.v1.auth.auth import Auth
+#     auth = Auth()
 auth = None
-auth_type = os.getenv("AUTH_TYPE")
-if auth_type == "basic_auth":
-    from api.v1.auth.basic_auth import BasicAuth
-    auth = BasicAuth()
+if os.getenv('AUTH_TYPE') == 'session_auth':
+    auth = SessionAuth()
 else:
-    from api.v1.auth.auth import Auth
-    auth = Auth()
+    auth = BasicAuth()
 
 
 @app.before_request
@@ -54,6 +61,17 @@ def forbidden(error) -> str:
 def not_found(error) -> str:
     """ Not found handler"""
     return jsonify({"error": "Not found"}), 404
+
+@app.teardown_appcontext
+def teardown(exception):
+    """ Close the storage session """
+    storage.close()
+
+
+@app.route('/api/v1/status', methods=['GET'])
+def status():
+    """ Returns the status of the API """
+    return jsonify({"status": "OK"})
 
 
 if __name__ == "__main__":
