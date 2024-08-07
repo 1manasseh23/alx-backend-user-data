@@ -5,6 +5,7 @@ from flask import request
 from typing import List, TypeVar
 import fnmatch
 
+
 class Auth:
     """Authentication class.
     """
@@ -34,4 +35,3 @@ class Auth:
         """ Method to get user from request.
         """
         return None
-

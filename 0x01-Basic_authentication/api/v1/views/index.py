@@ -13,6 +13,7 @@ def get_unauthorized():
 
     abort(401)
 
+
 @app_views.route('/api/v1/forbidden', methods=['GET'])
 def forbidden_route():
     """
