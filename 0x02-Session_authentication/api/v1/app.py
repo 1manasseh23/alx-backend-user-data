@@ -29,7 +29,11 @@ else:
 def before_request():
     """Handler for case where an auth is passed and has to be validated"""
     request.current_user = auth.current_user(request)
-    path_list = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+    path_list = [
+            '/api/v1/status/',
+            '/api/v1/unauthorized/',
+            '/api/v1/forbidden/'
+            ]
     path = request.path
     if auth.require_auth(path, path_list):
         if auth.authorization_header(request) is None:
@@ -60,4 +64,3 @@ if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
     app.run(host=host, port=port)
-
