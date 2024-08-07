@@ -43,24 +43,21 @@ else:
 #             abort(401)
 #         if request.current_user is None:
 #             abort(403)
+    # path_list = [
+    #         '/api/v1/status/',
+    #         '/api/v1/unauthorized/',
+    #         '/api/v1/forbidden/'
+    #         ]
+    # path = request.path
+    # if auth.require_auth(path, path_list):
+    #     if auth.authorization_header(request) is None:
+    #         abort(401)
+    #     if request.current_user is None:
+    #         abort(403)
 @app.before_request
 def before_request():
     """ Assign current_user to request """
     request.current_user = auth.current_user(request)
-<<<<<<< HEAD
-    path_list = [
-            '/api/v1/status/',
-            '/api/v1/unauthorized/',
-            '/api/v1/forbidden/'
-            ]
-    path = request.path
-    if auth.require_auth(path, path_list):
-        if auth.authorization_header(request) is None:
-            abort(401)
-        if request.current_user is None:
-            abort(403)
-=======
->>>>>>> refs/remotes/origin/main
 
 
 @app.errorhandler(401)
