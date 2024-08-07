@@ -32,17 +32,21 @@ else:
     auth = BasicAuth()
 
 
+# @app.before_request
+# def before_request():
+#     """Handler for case where an auth is passed and has to be validated"""
+#     request.current_user = auth.current_user(request)
+#     path_list = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+#     path = request.path
+#     if auth.require_auth(path, path_list):
+#         if auth.authorization_header(request) is None:
+#             abort(401)
+#         if request.current_user is None:
+#             abort(403)
 @app.before_request
 def before_request():
-    """Handler for case where an auth is passed and has to be validated"""
+    """ Assign current_user to request """
     request.current_user = auth.current_user(request)
-    path_list = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
-    path = request.path
-    if auth.require_auth(path, path_list):
-        if auth.authorization_header(request) is None:
-            abort(401)
-        if request.current_user is None:
-            abort(403)
 
 
 @app.errorhandler(401)
