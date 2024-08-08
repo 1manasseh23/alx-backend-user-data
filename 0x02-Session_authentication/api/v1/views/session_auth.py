@@ -36,8 +36,8 @@ def auth_session():
     return jsonify({"error": "wrong password"}), 401
 
 
-@app.route('/auth_session/login', methods=['POST'])
-def login():
+@app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
+def auth_session_login():
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -56,7 +56,6 @@ def login():
         return jsonify({"error": "wrong password"}), 401
 
     session_id = auth.create_session(user.id)
-    
     response = jsonify(user.to_json())
     response.set_cookie(app.config['SESSION_NAME'], session_id)
 
@@ -65,8 +64,6 @@ def login():
 
 @app_views.route('/auth_session/logout', methods=['DELETE'],
                  strict_slashes=False)
-
-
 def handle_logout():
     """
     Handle user logout
