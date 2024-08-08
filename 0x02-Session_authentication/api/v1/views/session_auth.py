@@ -37,7 +37,7 @@ def auth_session():
 
 
 @app.route('/auth_session/login', methods=['POST'])
-def auth_session_login():
+def login():
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -65,6 +65,8 @@ def auth_session_login():
 
 @app_views.route('/auth_session/logout', methods=['DELETE'],
                  strict_slashes=False)
+
+
 def handle_logout():
     """
     Handle user logout
