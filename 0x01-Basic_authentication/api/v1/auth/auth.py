@@ -1,60 +1,69 @@
 #!/usr/bin/env python3
-"""Authentication module.
 """
-from flask import request
+Module for authentication
+"""
 from typing import List, TypeVar
-# import fnmatch
+
+from flask import request
 
 
-class Auth:
-    """Authentication class.
+class Auth():
+    """Template for all authentication system implemented in this app.
     """
-    # def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-    #     """ Method to check if auth is required.
-    #     """
-    #     if path is None:
-    #         return True
 
-    #     if excluded_paths is None or not excluded_paths:
-    #         return True
+    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
+        """
+        This function takes a path and a list of excluded paths as arguments
+        and returns a boolean value.
 
-    #     for excluded_path in excluded_paths:
-    #         if fnmatch.fnmatch(path, excluded_path):
-    #             return False
+        Args:
+            path (str): The path to check against the list of excluded paths.
+            excluded_paths (List[str]): The list of excluded paths.
 
-    #     return True
+        Returns:
+            bool: True if the path is not in the excluded paths list,
+            False otherwise.
+        """
 
-    # def authorization_header(self, request=None) -> str:
-    #     """ Method to get authorization header.
-    #     """
-    #     if request is not None:
-    #         return request.headers.get('Authorization', None)
-    #     return None
-    def require_auth(self, path: str, excluded_paths: List[str]):
-        """checks for auth and returns false"""
-        # print("path", path)
-        # print("excluded:", excluded_paths)
-        if path is None or excluded_paths is None:
+        if not path:
             return True
-        if excluded_paths is []:
+
+        if not excluded_paths:
             return True
-        if path.endswith('/') is False:
-            path += "/"
-        if path in excluded_paths:
-            return False
+
+        path = path.rstrip("/")
+
+        for excluded_path in excluded_paths:
+
+            if excluded_path.endswith("*") and \
+                    path.startswith(excluded_path[:-1]):
+
+                return False
+
+            elif path == excluded_path.rstrip("/"):
+
+                return False
+
         return True
 
     def authorization_header(self, request=None) -> str:
-        """returns an authorized header
+        """Gets the value of the Authorization header from the request
+
+        Args:
+            request (request, optional): Flask request obj. Defaults to None.
+
+        Returns:
+            str: The value of the Authorization header or None if not present.
         """
-        if request is None:
-            return None
-        if request.headers.get("Authorization", None) is None:
-            return None
-        else:
-            return request.headers.get("Authorization", None)
+
+        if request is not None:
+            return request.headers.get('Authorization', None)
+        return None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """ Method to get user from request.
+        """This function takes a request object as an optional argument
+        (defaults to None) and returns a value of type 'User'. The purpose
+        and how the request object is used will be determined later.
+        For now, it simply returns None.
         """
         return None

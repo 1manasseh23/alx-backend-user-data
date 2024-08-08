@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """ Module of Index views
 """
-from flask import jsonify, Blueprint, abort
+from flask import jsonify, abort
 from api.v1.views import app_views
-
-app_views = Blueprint('app_views', __name__)
 
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
@@ -28,19 +26,21 @@ def stats() -> str:
     return jsonify(stats)
 
 
-@app_views.route('/api/v1/unauthorized', methods=['GET'])
-def unauthorized():
-    """This endpoint must raise a 401 error by using abort"""
+@app_views.route('/unauthorized/', strict_slashes=False, methods=['GET'])
+def unauthorized_endpoint() -> None:
+    """Endpoint that raises a 401 error.
 
+    Returns:
+        None: None.
+    """
     abort(401)
 
 
-@app_views.route('/api/v1/forbidden', methods=['GET'])
-def forbidden():
-    """
-    Route that triggers a 403 error.
+@app_views.route('/forbidden/', strict_slashes=False, methods=['GET'])
+def forbidden_endpoint() -> None:
+    """Endpoint that raises a 403 error.
+
+    Returns:
+        None: None.
     """
     abort(403)
-
-
-
