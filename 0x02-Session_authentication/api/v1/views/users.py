@@ -35,6 +35,7 @@ def view_one_user(user_id: str = None) -> str:
             # If the user_id is "me" and there is a current_user, return the
             # JSON representation of the current_user
             return jsonify(request.current_user.to_json())
+
     # If user_id is None, return a 404 error
     if user_id is None:
         abort(404)
@@ -47,7 +48,11 @@ def view_one_user(user_id: str = None) -> str:
     return jsonify(user.to_json())
 
 
-@app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
+@app_views.route(
+        '/users/<user_id>',
+        methods=['DELETE'],
+        strict_slashes=False
+        )
 def delete_user(user_id: str = None) -> str:
     """ DELETE /api/v1/users/:id
     Path parameter:
@@ -98,6 +103,7 @@ def create_user() -> str:
             user.last_name = rj.get("last_name")
             user.save()
             return jsonify(user.to_json()), 201
+
         except Exception as e:
             error_msg = "Can't create User: {}".format(e)
     return jsonify({'error': error_msg}), 400

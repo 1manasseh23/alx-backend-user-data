@@ -21,10 +21,9 @@ from api.v1.views import app_views
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+
 # Create a variable auth initialized to None after the CORS definition
 auth = None
-
-
 # Update api/v1/app.py for using SessionAuth instance for the variable
 # auth depending of the value of the environment variable AUTH_TYPE, If
 # AUTH_TYPE is equal to session_auth:
@@ -86,26 +85,31 @@ def handle_request():
     # If auth is None, do nothing
     if auth is None:
         return
+
     # Create list of excluded paths
     excluded_paths = ['/api/v1/status/',
                       '/api/v1/unauthorized/',
                       '/api/v1/forbidden/',
                       '/api/v1/auth_session/login/']
+
     # if request.path is not part of the list above, do nothing
     # You must use the method require_auth from the auth instance
     if not auth.require_auth(request.path, excluded_paths):
         return
+
     # If auth.authorization_header(request) and auth.session_cookie(request)
     # return None, raise the error, 401 - you must use abort
     auth_header = auth.authorization_header(request)
     session_cookie = auth.session_cookie(request)
     if auth_header is None and session_cookie is None:
         abort(401)
+
     # If auth.current_user(request) returns None, raise the error 403 - you
     # must use abort
     user = auth.current_user(request)
     if user is None:
         abort(403)
+
     # Assign the result of auth.current_user(request) to request.current_user
     request.current_user = user
 
