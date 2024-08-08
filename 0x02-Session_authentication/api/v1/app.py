@@ -5,88 +5,74 @@ Route module for the API
 from os import getenv
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
-from flask_cors import CORS
+from flask_cors import (CORS, cross_origin)
 import os
-from api.v1.auth.auth import Auth
-from api.v1.auth.session_auth import SessionAuth
-from api.v1.auth.basic_auth import BasicAuth
-# from models import storage
 
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-
-# auth = None
-# auth_type = os.getenv("AUTH_TYPE")
-# if auth_type == "basic_auth":
-#     from api.v1.auth.basic_auth import BasicAuth
-#     auth = BasicAuth()
-# else:
-#     from api.v1.auth.auth import Auth
-#     auth = Auth()
 auth = None
-if os.getenv('AUTH_TYPE') == 'session_auth':
-    auth = SessionAuth()
-else:
+AUTH_TYPE = os.getenv("AUTH_TYPE")
+if AUTH_TYPE == "auth":
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+elif AUTH_TYPE == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
+elif AUTH_TYPE == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
+elif AUTH_TYPE == "session_exp_auth":
+    from api.v1.auth.session_exp_auth import SessionExpAuth
+    auth = SessionExpAuth()
+elif AUTH_TYPE == "session_db_auth":
+    from api.v1.auth.session_db_auth import SessionDBAuth
+    auth = SessionDBAuth()
 
 
-# @app.before_request
-# def before_request():
-#     """Handler for case where an auth is passed and has to be validated"""
-#     request.current_user = auth.current_user(request)
-#     path_list = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
-#     path = request.path
-#     if auth.require_auth(path, path_list):
-#         if auth.authorization_header(request) is None:
-#             abort(401)
-#         if request.current_user is None:
-#             abort(403)
-    # path_list = [
-    #         '/api/v1/status/',
-    #         '/api/v1/unauthorized/',
-    #         '/api/v1/forbidden/'
-    #         ]
-    # path = request.path
-    # if auth.require_auth(path, path_list):
-    #     if auth.authorization_header(request) is None:
-    #         abort(401)
-    #     if request.current_user is None:
-    #         abort(403)
 @app.before_request
-def before_request():
-    """ Assign current_user to request """
-    request.current_user = auth.current_user(request)
+def bef_req():
+    """
+    Filter each request before it's handled by the proper route
+    """
+    if auth is None:
+        pass
+    else:
+        setattr(request, "current_user", auth.current_user(request))
+        excluded = [
+            '/api/v1/status/',
+            '/api/v1/unauthorized/',
+            '/api/v1/forbidden/',
+            '/api/v1/auth_session/login/'
+        ]
+        if auth.require_auth(request.path, excluded):
+            cookie = auth.session_cookie(request)
+            if auth.authorization_header(request) is None and cookie is None:
+                abort(401, description="Unauthorized")
+            if auth.current_user(request) is None:
+                abort(403, description="Forbidden")
+
+
+@app.errorhandler(404)
+def not_found(error) -> str:
+    """ Not found handler
+    """
+    return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error) -> str:
-    """Unauthorized handler."""
+    """ Request unauthorized handler
+    """
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
-    """Forbidden handler."""
+    """ Request unauthorized handler
+    """
     return jsonify({"error": "Forbidden"}), 403
-
-
-@app.errorhandler(404)
-def not_found(error) -> str:
-    """ Not found handler"""
-    return jsonify({"error": "Not found"}), 404
-
-@app.teardown_appcontext
-def teardown(exception):
-    """ Close the storage session """
-    storage.close()
-
-
-@app.route('/api/v1/status', methods=['GET'])
-def status():
-    """ Returns the status of the API """
-    return jsonify({"status": "OK"})
 
 
 if __name__ == "__main__":
