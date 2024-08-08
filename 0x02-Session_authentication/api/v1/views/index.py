@@ -41,6 +41,3 @@ def forbidden():
     Route that triggers a 403 error.
     """
     abort(403)
-
-
-
