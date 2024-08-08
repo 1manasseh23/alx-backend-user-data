@@ -32,6 +32,7 @@ class Auth():
             bool: True if the path is not in the excluded paths list,
             False otherwise.
         """
+
         # If path is None, return True
         if not path:
             return True
