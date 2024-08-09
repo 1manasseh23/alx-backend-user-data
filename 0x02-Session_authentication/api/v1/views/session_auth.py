@@ -10,6 +10,7 @@ from api.v1.app import auth
 from api.v1.views import app_views
 from models.user import User
 
+
 @app_views.route(
         '/auth_session/login',
         methods=['POST'],
@@ -17,12 +18,12 @@ from models.user import User
 )
 def session_auth_login() -> Tuple[str, int]:
     """Handles POST requests to /api/v1/auth_session/login.
-    
-    Authenticates a user based on email and password, 
+    Authenticates a user based on email and password,
     creates a session, and returns the user's information in JSON format.
 
     Returns:
-        Tuple[str, int]: JSON representation of a User object or an error message.
+        Tuple[str, int]: JSON representation of a User
+        object or an error message.
     """
     email = request.form.get('email')
     password = request.form.get('password')
@@ -47,6 +48,7 @@ def session_auth_login() -> Tuple[str, int]:
 
     return response
 
+
 @app_views.route(
     '/auth_session/logout',
     methods=['DELETE'],
@@ -54,11 +56,12 @@ def session_auth_login() -> Tuple[str, int]:
 )
 def session_auth_logout() -> Tuple[dict, int]:
     """Handles DELETE requests to /api/v1/auth_session/logout.
-    
+
     Destroys the user session, effectively logging the user out.
 
     Returns:
-        Tuple[dict, int]: An empty JSON object and a 200 status code if successful.
+        Tuple[dict, int]: An empty JSON object and
+        a 200 status code if successful.
     """
     is_destroyed = auth.destroy_session(request)
 

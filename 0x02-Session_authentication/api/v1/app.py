@@ -2,10 +2,7 @@
 """
 Route module for the API
 """
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 import os
 from os import getenv
 from typing import Tuple
@@ -22,15 +19,7 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-<<<<<<< Updated upstream
 auth = None  # Initialize the auth variable to None
-=======
-"""
-Create a variable auth initialized to None after the CORS definition
-"""
-
-auth = None
->>>>>>> Stashed changes
 auth_type = getenv('AUTH_TYPE', 'default')
 
 # Set the authentication type based on the AUTH_TYPE environment variable
@@ -45,6 +34,7 @@ elif auth_type == "basic_auth":
 else:
     auth = Auth()
 
+
 @app.errorhandler(404)
 def not_found(error) -> str:
     """
@@ -57,6 +47,7 @@ def not_found(error) -> str:
         str: JSON response with the error message and a 404 status code.
     """
     return jsonify({"error": "Not found"}), 404
+
 
 @app.errorhandler(401)
 def unauthorized(error: Exception) -> Tuple[jsonify, int]:
@@ -72,14 +63,11 @@ def unauthorized(error: Exception) -> Tuple[jsonify, int]:
     """
     return jsonify({"error": "Unauthorized"}), 401
 
+
 @app.errorhandler(403)
 def forbidden(error: Exception) -> Tuple[jsonify, int]:
     """
-<<<<<<< Updated upstream
     Error handler for forbidden requests.
-=======
-    Error handler for unauthorized requests.
->>>>>>> Stashed changes
 
     Args:
         error (Exception): The error raised.
@@ -89,6 +77,7 @@ def forbidden(error: Exception) -> Tuple[jsonify, int]:
         status code.
     """
     return jsonify({"error": "Forbidden"}), 403
+
 
 @app.before_request
 def handle_request():
@@ -118,6 +107,7 @@ def handle_request():
         abort(403)
 
     request.current_user = user
+
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
