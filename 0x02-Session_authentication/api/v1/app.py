@@ -2,7 +2,10 @@
 """
 Route module for the API
 """
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 import os
 from os import getenv
 from typing import Tuple
@@ -19,7 +22,15 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
+<<<<<<< Updated upstream
 auth = None  # Initialize the auth variable to None
+=======
+"""
+Create a variable auth initialized to None after the CORS definition
+"""
+
+auth = None
+>>>>>>> Stashed changes
 auth_type = getenv('AUTH_TYPE', 'default')
 
 # Set the authentication type based on the AUTH_TYPE environment variable
@@ -64,7 +75,11 @@ def unauthorized(error: Exception) -> Tuple[jsonify, int]:
 @app.errorhandler(403)
 def forbidden(error: Exception) -> Tuple[jsonify, int]:
     """
+<<<<<<< Updated upstream
     Error handler for forbidden requests.
+=======
+    Error handler for unauthorized requests.
+>>>>>>> Stashed changes
 
     Args:
         error (Exception): The error raised.
