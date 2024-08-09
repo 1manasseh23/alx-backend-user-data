@@ -34,29 +34,29 @@ class SessionDBAuth(SessionExpAuth):
         return None
 
     def user_id_for_session_id(self, session_id: str) -> str:
-        """Retrieves the user ID associated with the given session ID.
+        """Retrieves the user id of the user associated with given session id.
 
         Args:
-            session_id (str): Session ID.
+            session_id (str): Session id.
 
         Returns:
-            str: User ID if the session ID is valid and not expired,
-            None otherwise.
+            str: User id associated with the session id.
         """
         try:
             sessions = UserSession.search({'session_id': session_id})
         except Exception:
             return None
 
-        if not sessions:
+        if len(sessions) <= 0:
             return None
 
         # Check the expiration time of the session
-        current_time = datetime.now()
+        session = sessions[0]
+        cur_time = datetime.now()
         time_span = timedelta(seconds=self.session_duration)
-        exp_time = sessions[0].created_at + time_span
+        exp_time = session.created_at + time_span
 
-        if expiration_time < current_time:
+        if exp_time < cur_time:
             return None
 
         return session.user_id
