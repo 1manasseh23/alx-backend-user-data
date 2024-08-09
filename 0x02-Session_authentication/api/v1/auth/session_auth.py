@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Session authentication module for the API.
-This module provides a class for session-based authentication, handling 
+This module provides a class for session-based authentication, handling
 session creation, retrieval, and destruction for users.
 """
 
@@ -11,7 +11,7 @@ from .auth import Auth
 
 class SessionAuth(Auth):
     """Session authentication class that inherits from the Auth class.
-    
+
     This class manages the creation and validation of sessions for users,
     including storing session IDs and linking them to user IDs.
     """
@@ -22,8 +22,8 @@ class SessionAuth(Auth):
         """Creates a Session ID for a user_id.
 
         Args:
-            user_id (str, optional): The ID of the user to create a session for.
-            Defaults to None.
+            user_id (str, optional): The ID of the user to create a
+            session for. Defaults to None.
 
         Returns:
             str: The session ID if the user ID is valid, None otherwise.
@@ -55,7 +55,7 @@ class SessionAuth(Auth):
             request (flask.request, optional): The request object containing
             the session cookie. Defaults to None.
 
-        Use self.session_cookie(...) & self.user_id_for_session_id(...) 
+        Use self.session_cookie(...) & self.user_id_for_session_id(...)
         to return the User ID based on the cookie _my_session_id.
 
         Returns:

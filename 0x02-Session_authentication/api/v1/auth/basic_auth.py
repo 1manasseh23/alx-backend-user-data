@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Module for basic authentication.
 
-This module provides a class for handling Basic Authentication, including
-the extraction and decoding of authorization headers and retrieval of user 
-credentials.
+This module provides a class for handling Basic Authentication,
+including the extraction and decoding of authorization headers
+and retrieval of user credentials.
 """
 
 import base64
@@ -16,9 +16,9 @@ from .auth import Auth
 class BasicAuth(Auth):
     """Basic authentication class that inherits from the Auth class.
 
-    This class provides methods for extracting and decoding Basic 
-    Authorization headers, as well as retrieving the corresponding user 
-    object.
+    This class provides methods for extracting and decoding Basic
+    Authorization headers, as well as retrieving the
+    corresponding user object.
     """
 
     def extract_base64_authorization_header(
@@ -32,7 +32,8 @@ class BasicAuth(Auth):
             str: The Base64 part of the Authorization header, or None if the
                  header is invalid.
         """
-        if authorization_header is None or not isinstance(authorization_header, str):
+        if authorization_header is None or \
+                not isinstance(authorization_header, str):
             return None
         if not authorization_header.startswith("Basic "):
             return None
@@ -48,12 +49,17 @@ class BasicAuth(Auth):
                                                decoded.
 
         Returns:
-            str: The decoded value as a UTF-8 string, or None if decoding fails.
+            str: The decoded value as a UTF-8 string, or None if
+            decoding fails.
         """
-        if base64_authorization_header is None or not isinstance(base64_authorization_header, str):
+        if base64_authorization_header is None or \
+                not isinstance(base64_authorization_header, str):
             return None
         try:
-            decoded = base64.b64decode(base64_authorization_header, validate=True)
+            decoded = base64.b64decode(
+                    base64_authorization_header,
+                    validate=True
+            )
             return decoded.decode('utf-8')
         except (binascii.Error, UnicodeDecodeError):
             return None
@@ -65,7 +71,7 @@ class BasicAuth(Auth):
             decoded_header (str): A decoded header string.
 
         Returns:
-            Tuple[str, str]: Tuple containing the user email and password, 
+            Tuple[str, str]: Tuple containing the user email and password,
                              or (None, None) if extraction fails.
         """
         if decoded_header is None or not isinstance(decoded_header, str):
@@ -85,7 +91,7 @@ class BasicAuth(Auth):
             user_pwd (str): The user's password.
 
         Returns:
-            User: The User instance or None if the user is not found or the 
+            User: The User instance or None if the user is not found or the
                   password is invalid.
         """
         if not all(isinstance(x, str) for x in (user_email, user_pwd)):
@@ -105,10 +111,12 @@ class BasicAuth(Auth):
         """Retrieves the User instance for a request.
 
         Args:
-            request (:obj:`Request`, optional): The request object. Defaults to None.
+            request (:obj:`Request`, optional): The request object
+            Defaults to None.
 
         Returns:
-            User: The User instance based on the request, or None if not authenticated.
+            User: The User instance based on the request, or None if
+            not authenticated.
         """
         auth_header = self.authorization_header(request)
         b64_auth_header = self.extract_base64_authorization_header(auth_header)

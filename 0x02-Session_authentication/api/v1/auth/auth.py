@@ -43,7 +43,8 @@ class Auth:
         path = path.rstrip("/")
 
         for excluded_path in excluded_paths:
-            if excluded_path.endswith("*") and path.startswith(excluded_path[:-1]):
+            if excluded_path.endswith("*") and \
+                    path.startswith(excluded_path[:-1]):
                 return False
             elif path == excluded_path.rstrip("/"):
                 return False
@@ -54,7 +55,8 @@ class Auth:
         """Retrieves the value of the Authorization header from the request.
 
         Args:
-            request (flask.request, optional): The request object. Defaults to None.
+            request (flask.request, optional): The request object
+            Defaults to None.
 
         Returns:
             str: The value of the Authorization header or None if not present.
@@ -70,7 +72,8 @@ class Auth:
         logic for retrieving the current user based on the request.
 
         Args:
-            request (flask.request, optional): The request object. Defaults to None.
+            request (flask.request, optional): The request object
+            Defaults to None.
 
         Returns:
             TypeVar('User'): The current user, or None if not available.
@@ -81,10 +84,12 @@ class Auth:
         """Retrieves the session cookie from the request.
 
         Args:
-            request (flask.request, optional): The request object. Defaults to None.
+            request (flask.request, optional): The request
+            object. Defaults to None.
 
         Returns:
-            str: The value of the session cookie, or None if the request or cookie is invalid.
+            str: The value of the session cookie, or None if the
+            request or cookie is invalid.
         """
         if request is not None:
             cookie_name = os.getenv('SESSION_NAME')

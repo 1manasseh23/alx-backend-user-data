@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Module for session database authentication.
-This module provides a class that handles session authentication with 
+This module provides a class that handles session authentication with
 database storage and expiration support.
 """
 
@@ -12,7 +12,7 @@ from .session_exp_auth import SessionExpAuth
 class SessionDBAuth(SessionExpAuth):
     """Session authentication class with database storage & expiration support.
 
-    This class extends the session expiration authentication by adding 
+    This class extends the session expiration authentication by adding
     functionality to store session data in a database.
     """
 
@@ -40,7 +40,7 @@ class SessionDBAuth(SessionExpAuth):
             session_id (str): Session ID.
 
         Returns:
-            str: User ID if the session ID is valid and not expired, 
+            str: User ID if the session ID is valid and not expired,
             None otherwise.
         """
         try:
@@ -53,8 +53,8 @@ class SessionDBAuth(SessionExpAuth):
 
         # Check the expiration time of the session
         current_time = datetime.now()
-        session = sessions[0]
-        expiration_time = session.created_at + timedelta(seconds=self.session_duration)
+        time_span = timedelta(seconds=self.session_duration)
+        exp_time = sessions[0].created_at + time_span
 
         if expiration_time < current_time:
             return None
@@ -69,7 +69,7 @@ class SessionDBAuth(SessionExpAuth):
             the session cookie. Defaults to None.
 
         Returns:
-            bool: True if the session was destroyed successfully, 
+            bool: True if the session was destroyed successfully,
             False otherwise.
         """
         session_id = self.session_cookie(request)

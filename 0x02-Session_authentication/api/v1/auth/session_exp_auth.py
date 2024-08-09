@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Module for session expiration.
 
-This module provides a class that extends session authentication with 
+This module provides a class that extends session authentication with
 support for session expiration.
 """
 
@@ -29,7 +29,7 @@ class SessionExpAuth(SessionAuth):
         """Creates a new session for a user and assigns a session ID.
 
         The session ID is stored in the user_id_by_session_id dictionary with
-        the user_id and creation time as values. The session has an expiration 
+        the user_id and creation time as values. The session has an expiration
         time defined by the session_duration attribute.
 
         Args:
