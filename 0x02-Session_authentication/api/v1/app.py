@@ -3,14 +3,11 @@
 Route module for the API
 """
 
-
 import os
 from os import getenv
 from typing import Tuple
-
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
-
 from api.v1.auth.auth import Auth
 from api.v1.auth.basic_auth import BasicAuth
 from api.v1.auth.session_auth import SessionAuth
@@ -22,9 +19,10 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-# Create a variable auth initialized to None after the CORS definition
-auth = None
+auth = None  # Initialize the auth variable to None
 auth_type = getenv('AUTH_TYPE', 'default')
+
+# Set the authentication type based on the AUTH_TYPE environment variable
 if auth_type == "session_auth":
     auth = SessionAuth()
 elif auth_type == 'session_exp_auth':
@@ -36,17 +34,23 @@ elif auth_type == "basic_auth":
 else:
     auth = Auth()
 
-
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """ Not found handler
+    """
+    Error handler for 404 Not Found.
+
+    Args:
+        error (Exception): The error raised.
+
+    Returns:
+        str: JSON response with the error message and a 404 status code.
     """
     return jsonify({"error": "Not found"}), 404
 
-
 @app.errorhandler(401)
 def unauthorized(error: Exception) -> Tuple[jsonify, int]:
-    """Error handler for unauthorized requests.
+    """
+    Error handler for unauthorized requests.
 
     Args:
         error (Exception): The error raised.
@@ -57,35 +61,34 @@ def unauthorized(error: Exception) -> Tuple[jsonify, int]:
     """
     return jsonify({"error": "Unauthorized"}), 401
 
-
 @app.errorhandler(403)
 def forbidden(error: Exception) -> Tuple[jsonify, int]:
-    """Error handler for unauthorized requests.
+    """
+    Error handler for forbidden requests.
 
     Args:
         error (Exception): The error raised.
 
     Returns:
-        Tuple[jsonify, int]: JSON response with the error message and a 401
+        Tuple[jsonify, int]: JSON response with the error message and a 403
         status code.
     """
     return jsonify({"error": "Forbidden"}), 403
-
 
 @app.before_request
 def handle_request():
     """
     Handle the request by checking for authentication and authorization.
     """
-
     if auth is None:
         return
 
-    # Create list of excluded paths
-    excluded_paths = ['/api/v1/status/',
-                      '/api/v1/unauthorized/',
-                      '/api/v1/forbidden/',
-                      '/api/v1/auth_session/login/']
+    excluded_paths = [
+        '/api/v1/status/',
+        '/api/v1/unauthorized/',
+        '/api/v1/forbidden/',
+        '/api/v1/auth_session/login/'
+    ]
 
     if not auth.require_auth(request.path, excluded_paths):
         return
@@ -100,7 +103,6 @@ def handle_request():
         abort(403)
 
     request.current_user = user
-
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
