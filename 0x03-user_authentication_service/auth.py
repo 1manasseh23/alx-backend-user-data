@@ -10,6 +10,7 @@ from user import User
 from bcrypt import hashpw, gensalt
 from sqlalchemy.orm.exc import NoResultFound
 import uuid
+from typing import Union
 
 
 def _generate_uuid() -> str:
@@ -55,6 +56,41 @@ class Auth:
         # Return the session ID.
         return session_id
 
+    def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
+        """Retrieve a User object from a session ID.
+        Args:
+            session_id (str): The ID of the session to retrieve the user from.
+        Returns:
+            Union[User, None]: A User object corresponding to the session ID if
+            one exists, otherwise None.
+        """
+        # If the session ID is None or no user is found, return None
+        if session_id is None:
+            return None
+        try:
+            # Attempt to retrieve the user object corresponding to the session
+            # ID from the database
+            user = self._db.find_user_by(session_id=session_id)
+        except NoResultFound:
+            # If no user object is found, return None
+            return None
+        # Otherwise return the corresponding user.
+        return user
+
+    def destroy_session(self, user_id: int) -> None:
+        """Method to destroy the session associated with a user
+        Args:
+            user_id (int): The ID of the user whose session is to be destroyed.
+        Returns:
+            None
+        """
+        # If user ID is None, return None
+        if user_id is None:
+            return None
+        # Update the user object in the database with a null session ID to
+        # destroy the session - update it to None
+        self._db.update_user(user_id, session_id=None)
+
     def register_user(self, email: str, password: str) -> User:
         """Registers a new user with the provided email and password."""
         try:
@@ -76,18 +112,23 @@ class Auth:
         return new_user
 
     def valid_login(self, email: str, password: str) -> bool:
-        """Validate login credentials."""
+        """Checks if a user's email and password are valid.
+        Args:
+            email (str): The email of the user.
+            password (str): The password of the user.
+        Returns:
+            bool: True if the email and password match a registered user,
+            False otherwise.
+        """
         try:
             # Locate the user by email
             user = self._db.find_user_by(email=email)
-            if not user:
-                return False
-
-            # Check if the provided password matches the stored hashed password
-            if bcrypt.checkpw(password.encode('utf-8'), user.hashed_password):
-                return True
-            else:
-                return False
-
-        except Exception:
+            if user is not None:
+                # Check if the password matches using bcrypt
+                password_bytes = password.encode('utf-8')
+                hashed_password = user.hashed_password
+                if bcrypt.checkpw(password_bytes, hashed_password):
+                    return True
+        except NoResultFound:
             return False
+        return False
